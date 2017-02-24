@@ -1,15 +1,55 @@
-
 <?php
-//Doducmento XML en PHP
+
+// Start XML file, create parent node
 require("dbinfo.php");
 
+function parseToXML($htmlStr)
+{
+$xmlStr=str_replace('<','&lt;',$htmlStr);
+$xmlStr=str_replace('>','&gt;',$xmlStr);
+$xmlStr=str_replace('"','&quot;',$xmlStr);
+$xmlStr=str_replace("'",'&#39;',$xmlStr);
+$xmlStr=str_replace("&",'&amp;',$xmlStr);
+return $xmlStr;
+}
 
-// Conexion a la BD
-$conn = new mysqli($servername, $username, $password);
+// Opens a connection to a MySQL server
+$connection=mysql_connect ($servername, $username, $password);
+if (!$connection) {
+  die('Not connected : ' . mysql_error());
+}
 
-// Verificando la conexion
-if ($conn->connect_error) {
-    die("Conexion fallida: " . $conn->connect_error);
-} 
-	echo "Conexion exitosa";
+// Set the active MySQL database
+$db_selected = mysql_select_db($database, $connection);
+if (!$db_selected) {
+  die ('Can\'t use db : ' . mysql_error());
+}
+
+// Select all the rows in the markers table
+$query = "SELECT * FROM markers WHERE 1";
+$result = mysql_query($query);
+if (!$result) {
+  die('Invalid query: ' . mysql_error());
+}
+
+header("Content-type: text/xml");
+
+// Start XML file, echo parent node
+echo '<markers>';
+
+// Iterate through the rows, printing XML nodes for each
+while ($row = @mysql_fetch_assoc($result)){
+  // Add to XML document node
+  echo '<marker ';
+  echo 'name="' . parseToXML($row['name']) . '" ';
+  echo 'address="' . parseToXML($row['address']) . '" ';
+  echo 'lat="' . $row['lat'] . '" ';
+  echo 'lng="' . $row['lng'] . '" ';
+  echo 'type="' . $row['type'] . '" ';
+  echo '/>';
+}
+
+// End XML file
+echo '</markers>';
+
 ?>

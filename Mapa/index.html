@@ -4,111 +4,42 @@
     <title>Geolocation</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <link rel=stylesheet href="estilos.css" >
+    </head>
 
-  </form>
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script>
+    <body>
+      <div id="map" height="460px" width="100%"></div>
+      <!-- tabla para añadir datos a la BD-->
+      <div id="form">
+      <table>
+      <tr><td>Nombre:</td> <td><input type='text' id='name'/> </td> </tr>
+      <tr><td>Direccion:</td> <td><input type='text' id='address'/> </td> </tr>
+      <tr><td>Tipo:</td> <td><select id='type'> +
+        <option value='cliente tipo a' SELECTED>bar</option>
+        <option value='cliente tipo b'>restaurant</option>
+      </select> </td></tr>
+      <tr><td></td><td><input type='button' value='Guardar' onclick='saveData()'/></td></tr>
+      </table>
+      </div>
+      
+      <div id="message">Coordenadas guardadas</div>
+      <!--  Fin agregar a la base de datos-->
+      <div id="listing">
+        <table id="resultsTable">
+          <tbody id="results"></tbody>
+        </table>
+      </div>
 
-var lat,lon;
-function initMap() {
-  var myLatLng = {lat: -16.3988900, lng:  -71.5350000};
-  var myLatLng2 = {lat: -22.363, lng: 131.044};
-
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 10,
-    center: myLatLng
-  });
-
-
-  ///INFORMACION DE LA VENTANA
-  var infowindow = new google.maps.InfoWindow({
-          content: "PROBANDO LA INFO SOLICITADA"
-  });
-
-  var marker = new google.maps.Marker({
-    position: myLatLng,
-    map: map,
-    draggable:true,
-    title: 'Hello World!'
-  });
-  var lat = marker.getPosition().lat();
-  var lon = marker.getPosition().lng();
-
-
-  document.getElementsByName("test").value = lat;
-  console.log(lat);
-  console.log(lon);
-  // por cada click
-  
-  map.addListener('click', function(event) {
-    var pos_temp = {lat:event.latLng.lat(), lng:event.latLng.lng() }
-    
-    var temp_marker = new google.maps.Marker({
-    position: pos_temp,
-    map: map,
-    draggable:true,
-    title: 'Hello World!'
-  })
-  temp_marker.addListener('click', function() {
-      infowindow.open(map, temp_marker);
-  });
-  //Posiciones de los puntos
-  this.lat = temp_marker.getPosition().lat();
-  this.lon = temp_marker.getPosition().lng();
-  console.log(this.lat);
-  
-    
-  }); ///add listener
-}//function init maps
-
-function onEnviar(){
-       document.getElementById("lat").value=lat;
-       document.getElementById("lon").value=lon;
-  }
-</script>
-
-
-<!-- ********************************************************************************************************* -->
-<!-- Insertando Valores a la BD -->
-
-<?php
-function insertarBD(){
-  require("generarxml.php");
-  $latitud  = “<script> document.write(lat) </script>”;
-  $longitud = “<script> document.write(lon) </script>”;
-  $sql = "INSERT INTO clientes (lat,lng)
-  VALUES ('John', 'Doe')";
-
-  if ($conn->query($sql) === TRUE) {
-      echo "Nuevo registro agregado correctamente";
-  } else {
-      echo "Error: " . $sql . "<br>" . $conn->error;
-  }
-
-  $conn->close();
-}
-if(isset($_POST['botonBD'])){
-   insertarBD();
-}
-
-
-?>
-<!-- ********************************************************************************************************* -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUYRobIOC7Ple3fTc1Lgzmu9C-ZKubutE&callback=initMap"
-        async defer>
-    </script>
-  </body>
+      <div id='response'></div> 
+      <div id="map"></div>
+      
+      <!-- File para recuperar valores de la BD y mostrarlos creando marcadores-->
+      <script src="mostrarClientes.js"> </script>
+      <!-- ********************************************************************************************************* -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUYRobIOC7Ple3fTc1Lgzmu9C-ZKubutE&callback=initMap" async defer>
+      </script>
+    </body>
 </html>
+
+
